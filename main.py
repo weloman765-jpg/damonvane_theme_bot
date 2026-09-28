@@ -10,14 +10,14 @@ from aiohttp import web
 
 logging.basicConfig(level=logging.INFO)
 
-# Твои точные настройки
-BOT_TOKEN = "8834965252:AAH_wdNbp3ZlZhI_I-t4evcucw1ymiI9s20"
+# ТВОЙ НОВЫЙ СВЕЖИЙ API ТОКЕН БЕЗ КОНФЛИКТОВ
+BOT_TOKEN = "8834965252:AAEoksJGKoX0uAT58W2p79UZjP-CwGXTacQ"
 ADMIN_ID = 8132438068
 CHANNEL_ID = -1003635455941
 CHANNEL_URL = "tg://resolve?domain=damvaninfo"
 
-# ИСПРАВЛЕНО НА СТО МИЛЛИАРДОВ ПРОЦЕНТОВ: ник через дефис, репо через подчёркивание!
-WEBAPP_URL = "https://weloman765-jpg.github.io/damonvane_theme_bot/"
+# Твоя точная рабочая ссылка на сайт-конструктор
+WEBAPP_URL = "https://github.io"
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
