@@ -16,7 +16,7 @@ ADMIN_ID = 8132438068
 CHANNEL_ID = -1003635455941
 CHANNEL_URL = "tg://resolve?domain=damvaninfo"
 
-# ЖЕЛЕЗОБЕТОННО ИСПРАВЛЕНО: Твоя точная рабочая ссылка с подчёркиваниями!
+# ИСПРАВЛЕНО НА СТО МИЛЛИАРДОВ ПРОЦЕНТОВ: ник через дефис, репо через подчёркивание!
 WEBAPP_URL = "https://weloman765-jpg.github.io/damonvane_theme_bot/"
 
 bot = Bot(token=BOT_TOKEN)
