@@ -1,8 +1,7 @@
 import asyncio, logging, json, os
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import (Message, InlineKeyboardButton, InlineKeyboardMarkup, 
-                           CallbackQuery, KeyboardButton, ReplyKeyboardMarkup, 
-                           ReplyKeyboardRemove, WebAppInfo, InlineQuery, 
+                           CallbackQuery, KeyboardButton, ReplyKeyboardRemove, WebAppInfo, InlineQuery, 
                            InlineQueryResultArticle, InputTextMessageContent)
 from aiogram.filters import Command
 from aiogram.client.session.aiohttp import AiohttpSession
@@ -10,7 +9,7 @@ from aiohttp import web
 
 logging.basicConfig(level=logging.INFO)
 
-# ТВОЙ НОВЫЙ СВЕЖИЙ API ТОКЕН БЕЗ КОНФЛИКТОВ
+# Твои точные настройки
 BOT_TOKEN = "8834965252:AAEoksJGKoX0uAT58W2p79UZjP-CwGXTacQ"
 ADMIN_ID = 8132438068
 CHANNEL_ID = -1003635455941
@@ -31,7 +30,7 @@ TEXTS = {
         "btn_sub": "Подписаться на канал",
         "btn_check_sub": "проверить подписку",
         "not_sub_alert": "подпишитесь на канал чтобы продолжить!",
-        "create_here": "Создайте свою тему, нажав на кнопку внизу чата ↓",
+        "create_here": "Создайте свою тему тут↓",
         "btn_create": "Создать тему"
     },
     "en": {
@@ -39,7 +38,7 @@ TEXTS = {
         "btn_sub": "Subscribe to channel",
         "btn_check_sub": "check subscription",
         "not_sub_alert": "subscribe to the channel to continue!",
-        "create_here": "Create your theme by clicking the button below ↓",
+        "create_here": "Create your theme here↓",
         "btn_create": "Create theme"
     }
 }
@@ -64,15 +63,15 @@ def get_start_keyboard(lang):
         [InlineKeyboardButton(text=TEXTS[lang]["btn_check_sub"], callback_data=f"check_{lang}")]
     ])
 
-def get_reply_creator_keyboard(lang):
-    return ReplyKeyboardMarkup(
-        keyboard=[[KeyboardButton(text=TEXTS[lang]["btn_create"], web_app=WebAppInfo(url=WEBAPP_URL))]],
-        resize_keyboard=True,
-        one_time_keyboard=False
-    )
+# ИСПРАВЛЕНО: Теперь кнопка создания темы снова инлайн, под сообщением!
+def get_inline_creator_keyboard(lang):
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text=TEXTS[lang]["btn_create"], web_app=WebAppInfo(url=WEBAPP_URL))]
+    ])
 
 @dp.message(Command("start"))
 async def cmd_start(message: Message):
+    # Принудительно уничтожаем старую зависшую нижнюю кнопку ReplyKeyboardMarkup
     await message.answer("Hello! Welcome to Damon Vane Theme, please choose a language to continue", reply_markup=ReplyKeyboardRemove())
     await message.answer("Choose a language:", reply_markup=get_lang_keyboard())
 
@@ -93,7 +92,7 @@ async def process_check_sub(callback: CallbackQuery):
     
     if await check_subscription(user_id):
         await callback.answer()
-        await callback.message.answer(TEXTS[lang]["create_here"], reply_markup=get_reply_creator_keyboard(lang))
+        await callback.message.answer(TEXTS[lang]["create_here"], reply_markup=get_inline_creator_keyboard(lang))
         try:
             await callback.message.delete()
         except Exception:
