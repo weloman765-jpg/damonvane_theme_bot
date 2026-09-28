@@ -25,13 +25,11 @@ colorText.addEventListener('input', (e) => { valText.textContent = e.target.valu
 colorAccent.addEventListener('input', (e) => { valAccent.textContent = e.target.value.toUpperCase(); });
 sliderOpacity.addEventListener('input', (e) => { valOpacity.textContent = `${e.target.value}%`; });
 
-// Железный вызов галереи смартфона при клике на плашку обоев
 uploadBox.addEventListener('click', (e) => {
     e.preventDefault();
     fileInput.click();
 });
 
-// Прямое чтение картинки из памяти телефона без фотохостингов
 fileInput.addEventListener('change', (e) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -42,7 +40,6 @@ fileInput.addEventListener('change', (e) => {
 
     const reader = new FileReader();
     reader.onload = function(event) {
-        // Получаем чистый локальный адрес файла для отображения превью на экране
         uploadedImageUrl = event.target.result;
         previewImg.src = uploadedImageUrl;
         previewImg.style.display = 'block';
@@ -50,11 +47,10 @@ fileInput.addEventListener('change', (e) => {
         btnCreate.disabled = false;
     };
     reader.onerror = function() {
-        uploadStatus.textContent = "Ошибка чтения файла. Попробуйте другие обои.";
+        uploadStatus.textContent = "Ошибка чтения файла.";
         btnCreate.disabled = false;
     };
     
-    // Читаем как DataURL (локальная ссылка)
     reader.readAsDataURL(file);
 });
 
@@ -68,7 +64,6 @@ btnCreate.addEventListener('click', () => {
     
     let themeUrl = `https://t.me{bg}&text=${text}&accent=${accent}&opacity=${alpha}&platform=${device}`;
     
-    // Если картинка загружена, передаем её локальный хэш боту
     const resultData = {
         url: themeUrl,
         bg: colorBg.value,
