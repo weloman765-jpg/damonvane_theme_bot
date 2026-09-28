@@ -199,16 +199,15 @@
 
     <div class="header">
         <h1>Конструктор Тем</h1>
-        <!-- Текст изменён по вашему требованию -->
         <p>темы Damon Vane</p>
     </div>
 
     <div class="section">
         <div class="section-title">Задний фон (Опционально)</div>
-        <div class="upload-zone" id="upload-box">
+        <!-- ИСПРАВЛЕНО: Прямой встроенный клик прямо на уровне тега для стопроцентного пробития Android -->
+        <div class="upload-zone" onclick="document.getElementById('file-input').click();">
             <p id="upload-status">Нажмите, чтобы загрузить обои</p>
-            <!-- ИСПРАВЛЕНО: убран accept="image/*", ломающий Android WebApp -->
-            <input type="file" id="file-input">
+            <input type="file" id="file-input" style="display:none;" onchange="const event = new Event('change'); document.dispatchEvent(event);">
             <img id="preview" class="preview-img" src="" alt="Превью">
         </div>
     </div>
