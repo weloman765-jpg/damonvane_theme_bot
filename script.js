@@ -25,42 +25,38 @@ colorText.addEventListener('input', (e) => { valText.textContent = e.target.valu
 colorAccent.addEventListener('input', (e) => { valAccent.textContent = e.target.value.toUpperCase(); });
 sliderOpacity.addEventListener('input', (e) => { valOpacity.textContent = `${e.target.value}%`; });
 
-// ИСПРАВЛЕННЫЙ МОБИЛЬНЫЙ ТРИГГЕР ДЛЯ ГАЛЕРЕИ ТЕЛЕФОНА
-uploadBox.onclick = function(e) {
+// Железный вызов галереи смартфона при клике на плашку обоев
+uploadBox.addEventListener('click', (e) => {
     e.preventDefault();
     fileInput.click();
-};
+});
 
-fileInput.onchange = async function(e) {
+// Прямое чтение картинки из памяти телефона без фотохостингов
+fileInput.addEventListener('change', (e) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    uploadStatus.textContent = "Загрузка изображения на сервер...";
+    const file = files[0];
+    uploadStatus.textContent = "Обработка изображения...";
     btnCreate.disabled = true;
 
-    const formData = new FormData();
-    formData.append('image', files[0]);
-
-    try {
-        const response = await fetch('https://imgur.com', {
-            method: 'POST',
-            headers: { Authorization: 'Client-ID 78efca0b1c0bc81' },
-            body: formData
-        });
-        const resData = await response.json();
-        if (resData.success) {
-            uploadedImageUrl = resData.data.link;
-            previewImg.src = uploadedImageUrl;
-            previewImg.style.display = 'block';
-            uploadStatus.textContent = "Изображение успешно добавлено!";
-        } else {
-            uploadStatus.textContent = "Ошибка загрузки. Попробуйте еще раз.";
-        }
-    } catch (err) {
-        uploadStatus.textContent = "Ошибка сети хостинга картинок.";
-    }
-    btnCreate.disabled = false;
-};
+    const reader = new FileReader();
+    reader.onload = function(event) {
+        // Получаем чистый локальный адрес файла для отображения превью на экране
+        uploadedImageUrl = event.target.result;
+        previewImg.src = uploadedImageUrl;
+        previewImg.style.display = 'block';
+        uploadStatus.textContent = "Изображение успешно добавлено!";
+        btnCreate.disabled = false;
+    };
+    reader.onerror = function() {
+        uploadStatus.textContent = "Ошибка чтения файла. Попробуйте другие обои.";
+        btnCreate.disabled = false;
+    };
+    
+    // Читаем как DataURL (локальная ссылка)
+    reader.readAsDataURL(file);
+});
 
 btnCreate.addEventListener('click', () => {
     const bg = colorBg.value.replace('#', '');
@@ -71,10 +67,8 @@ btnCreate.addEventListener('click', () => {
     const alpha = Math.round((opacityVal / 100) * 255).toString(16).padStart(2, '0');
     
     let themeUrl = `https://t.me{bg}&text=${text}&accent=${accent}&opacity=${alpha}&platform=${device}`;
-    if(uploadedImageUrl) {
-        themeUrl += `&wallpaper=${encodeURIComponent(uploadedImageUrl)}`;
-    }
     
+    // Если картинка загружена, передаем её локальный хэш боту
     const resultData = {
         url: themeUrl,
         bg: colorBg.value,
