@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Damon Vane Themes</title>
+    <title>Damon Vane Themes Конструктор</title>
     <script src="https://telegram.org"></script>
     <style>
         body {
@@ -19,15 +19,15 @@
         }
         .header {
             text-align: center;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
         .header h1 {
             font-size: 20px;
-            margin: 0 0 8px 0;
+            margin: 0 0 6px 0;
             font-weight: 600;
         }
         .header p {
-            font-size: 14px;
+            font-size: 13px;
             color: #707579;
             margin: 0;
         }
@@ -36,11 +36,11 @@
             background-color: #151f2d;
             border-radius: 12px;
             padding: 16px;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             box-sizing: border-box;
         }
         .section-title {
-            font-size: 12px;
+            font-size: 11px;
             color: #3b82f6;
             text-transform: uppercase;
             font-weight: bold;
@@ -58,7 +58,7 @@
             border-bottom: none;
         }
         .color-label {
-            font-size: 15px;
+            font-size: 14px;
         }
         .color-input-wrapper {
             display: flex;
@@ -66,15 +66,15 @@
             gap: 10px;
         }
         .color-value {
-            font-size: 14px;
+            font-size: 13px;
             color: #8e969e;
             font-family: monospace;
         }
         input[type="color"] {
             -webkit-appearance: none;
             border: none;
-            width: 32px;
-            height: 32px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             cursor: pointer;
             background: none;
@@ -86,36 +86,61 @@
             border: 2px solid #ffffff33;
             border-radius: 50%;
         }
+        .upload-zone {
+            border: 2px dashed #243447;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .upload-zone:active {
+            border-color: #3b82f6;
+        }
+        .upload-zone p {
+            margin: 0;
+            font-size: 14px;
+            color: #8e969e;
+        }
+        #file-input {
+            display: none;
+        }
+        .preview-img {
+            max-width: 100%;
+            max-height: 120px;
+            border-radius: 6px;
+            margin-top: 10px;
+            display: none;
+        }
         .radio-group {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
         .radio-row {
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 15px;
+            font-size: 14px;
             cursor: pointer;
         }
         input[type="radio"] {
             appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border: 2px solid #8e969e;
             border-radius: 50%;
             outline: none;
-            background-color: transparent;
             display: grid;
             place-content: center;
         }
         input[type="radio"]::before {
             content: "";
-            width: 10px;
-            height: 10px;
+            width: 9px;
+            height: 9px;
             border-radius: 50%;
             transform: scale(0);
-            transition: 120ms transform ease-in-out;
+            transition: 100ms transform ease-in-out;
             background-color: #3b82f6;
         }
         input[type="radio"]:checked {
@@ -127,12 +152,12 @@
         .slider-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
         .slider-header {
             display: flex;
             justify-content: space-between;
-            font-size: 14px;
+            font-size: 13px;
             color: #8e969e;
         }
         input[type="range"] {
@@ -145,15 +170,11 @@
         }
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border-radius: 50%;
             background: #3b82f6;
             cursor: pointer;
-            transition: transform 0.1s;
-        }
-        input[type="range"]::-webkit-slider-thumb:active {
-            transform: scale(1.2);
         }
         .btn-main {
             width: 100%;
@@ -161,33 +182,44 @@
             color: #ffffff;
             border: none;
             border-radius: 12px;
-            padding: 16px;
-            font-size: 16px;
+            padding: 15px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
-            margin-top: 12px;
-            transition: background-color 0.2s;
+            margin-top: 10px;
         }
-        .btn-main:active {
-            background-color: #2563eb;
+        .btn-main:disabled {
+            background-color: #243447;
+            color: #8e969e;
+            cursor: not-allowed;
         }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <h1>Редактор цветов</h1>
-        <p>Измените цвета в вашей теме</p>
+        <h1>Конструктор Тем</h1>
+        <p>Кастомизация внешнего вида как в Kinkki</p>
     </div>
 
-    <!-- Раздел выбора цветов -->
+    <!-- Загрузка изображения -->
     <div class="section">
-        <div class="section-title">Цвета интерфейса</div>
+        <div class="section-title">Задний фон (Опционально)</div>
+        <div class="upload-zone" id="upload-box">
+            <p id="upload-status">Нажмите, чтобы загрузить обои</p>
+            <input type="file" id="file-input" accept="image/*">
+            <img id="preview" class="preview-img" src="" alt="Превью">
+        </div>
+    </div>
+
+    <!-- Выбор цветов -->
+    <div class="section">
+        <div class="section-title">Палитра цветов интерфейса</div>
         
         <div class="color-row">
-            <span class="color-label">Цвет фона чата</span>
+            <span class="color-label">Основной цвет фона</span>
             <div class="color-input-wrapper">
-                <span class="color-value" id="val-bg">#0b0e14</span>
+                <span class="color-value" id="val-bg">#0B0E14</span>
                 <input type="color" id="color-bg" value="#0b0e14">
             </div>
         </div>
@@ -195,15 +227,15 @@
         <div class="color-row">
             <span class="color-label">Цвет текста сообщений</span>
             <div class="color-input-wrapper">
-                <span class="color-value" id="val-text">#ffffff</span>
+                <span class="color-value" id="val-text">#FFFFFF</span>
                 <input type="color" id="color-text" value="#ffffff">
             </div>
         </div>
 
         <div class="color-row">
-            <span class="color-label">Второстепенный цвет</span>
+            <span class="color-label">Акцентные элементы/Кнопки</span>
             <div class="color-input-wrapper">
-                <span class="color-value" id="val-accent">#3b82f6</span>
+                <span class="color-value" id="val-accent">#3B82F6</span>
                 <input type="color" id="color-accent" value="#3b82f6">
             </div>
         </div>
@@ -211,15 +243,15 @@
 
     <!-- Раздел выбора устройства -->
     <div class="section">
-        <div class="section-title">Выберите устройство</div>
+        <div class="section-title">Платформа назначения</div>
         <div class="radio-group">
             <label class="radio-row">
                 <input type="radio" name="device" value="android" checked>
-                <span>Android</span>
+                <span>Android (.attheme)</span>
             </label>
             <label class="radio-row">
                 <input type="radio" name="device" value="ios">
-                <span>iOS</span>
+                <span>iOS (.tgios-theme)</span>
             </label>
             <label class="radio-row">
                 <input type="radio" name="device" value="desktop">
@@ -230,10 +262,10 @@
 
     <!-- Раздел прозрачности -->
     <div class="section">
-        <div class="section-title">Прозрачность сообщений</div>
+        <div class="section-title">Прозрачность облаков сообщений</div>
         <div class="slider-wrapper">
             <div class="slider-header">
-                <span>Уровень прозрачности</span>
+                <span>Интенсивность</span>
                 <span id="val-opacity">100%</span>
             </div>
             <input type="range" id="slider-opacity" min="10" max="100" value="100">
@@ -242,6 +274,5 @@
 
     <button class="btn-main" id="btn-create">Создать тему</button>
 
-    <script src="script.js"></script>
 </body>
 </html>
