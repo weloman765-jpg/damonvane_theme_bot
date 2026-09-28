@@ -7,14 +7,12 @@ from aiohttp import web
 
 logging.basicConfig(level=logging.INFO)
 
-# Твои точные настройки
 BOT_TOKEN = "8834965252:AAH_wdNbp3ZlZhI_I-t4evcucw1ymiI9s20"
 ADMIN_ID = 8132438068
 CHANNEL_ID = -1003635455941
 CHANNEL_URL = "tg://resolve?domain=damvaninfo"
 WEBAPP_URL = "https://github.io"
 
-# На Render прокси НЕ НУЖЕН, убираем блокировки!
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
@@ -103,24 +101,31 @@ async def process_webapp_data(message: Message):
         bg = data.get("bg")
         text = data.get("text")
         accent = data.get("accent")
+        device = data.get("device", "android").upper()
+        has_wp = data.get("has_wallpaper", "Нет")
         
         kb = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="Установить тему", url=theme_url)]
+            [InlineKeyboardButton(text="Установить тему 📥", url=theme_url)]
         ])
         
-        success_text = f"Тема создана.\n\nЦвет фона: {bg}\nЦвет текста: {text}\nВторой цвет: {accent}\n\nНажмите на кнопку ниже, чтобы применить её:"
-        await message.answer(success_text, reply_markup=kb)
+        success_text = (
+            f"✨ **Ваша кастомная тема готова!** ✨\n\n"
+            f"📱 Платформа: `{device}`\n"
+            f"🎨 Цвет фона: `{bg}`\n"
+            f"📝 Цвет текста: `{text}`\n"
+            f"⚡️ Акцент: `{accent}`\n"
+            f"🖼 Собственные обои: `{has_wp}`\n\n"
+            f"Нажмите на кнопку ниже, чтобы применить настройки конфигурации интерфейса:"
+        )
+        await message.answer(success_text, reply_markup=kb, parse_mode="Markdown")
     except Exception as e:
         logging.error(f"Ошибка WebApp данных: {e}")
 
-# Пустой фейковый веб-сервер, чтобы Render думал, что это бесплатный сайт
 async def handle(request):
     return web.Response(text="Bot is running!")
 
 async def main():
-    # Запускаем бота в фоне
     asyncio.create_task(dp.start_polling(bot))
-    # Запускаем фейковый сайт на порту, который требует Render
     app = web.Application()
     app.router.add_get('/', handle)
     port = int(os.environ.get("PORT", 10000))
@@ -128,7 +133,6 @@ async def main():
     await runner.setup()
     site = web.TCPSite(runner, '0.0.0.0', port)
     await site.start()
-    # Удерживаем сервер в сети
     while True:
         await asyncio.sleep(3600)
 
