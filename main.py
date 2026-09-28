@@ -1,20 +1,29 @@
 import asyncio, logging, json, os
 from aiogram import Bot, Dispatcher, F
-from aiogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery, KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, WebAppInfo
+from aiogram.types import (Message, InlineKeyboardButton, InlineKeyboardMarkup, 
+                           CallbackQuery, KeyboardButton, ReplyKeyboardMarkup, 
+                           ReplyKeyboardRemove, WebAppInfo, InlineQuery, 
+                           InlineQueryResultArticle, InputTextMessageContent)
 from aiogram.filters import Command
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiohttp import web
 
 logging.basicConfig(level=logging.INFO)
 
+# Твои точные настройки
 BOT_TOKEN = "8834965252:AAH_wdNbp3ZlZhI_I-t4evcucw1ymiI9s20"
 ADMIN_ID = 8132438068
 CHANNEL_ID = -1003635455941
 CHANNEL_URL = "tg://resolve?domain=damvaninfo"
-WEBAPP_URL = "https://github.io"
+
+# ЖЕЛЕЗОБЕТОННО ИСПРАВЛЕНО: Твоя точная рабочая ссылка с подчёркиваниями!
+WEBAPP_URL = "https://weloman765-jpg.github.io/damonvane_theme_bot/"
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
+
+# Хранилище тем для инлайн-режима
+USER_THEMES = {}
 
 TEXTS = {
     "ru": {
@@ -94,7 +103,7 @@ async def process_check_sub(callback: CallbackQuery):
 
 @dp.message(F.web_app_data)
 async def process_webapp_data(message: Message):
-    lang = "ru"
+    user_id = message.from_user.id
     try:
         data = json.loads(message.web_app_data.data)
         theme_url = data.get("url")
@@ -104,8 +113,18 @@ async def process_webapp_data(message: Message):
         device = data.get("device", "android").upper()
         has_wp = data.get("has_wallpaper", "Нет")
         
+        USER_THEMES[user_id] = {
+            "url": theme_url,
+            "device": device,
+            "bg": bg,
+            "text": text,
+            "accent": accent,
+            "has_wp": has_wp
+        }
+        
         kb = InlineKeyboardMarkup(inline_keyboard=[
-            [InlineKeyboardButton(text="Установить тему 📥", url=theme_url)]
+            [InlineKeyboardButton(text="Установить тему 📥", url=theme_url)],
+            [InlineKeyboardButton(text="Поделиться темой 🚀", switch_inline_query="")]
         ])
         
         success_text = (
@@ -115,11 +134,49 @@ async def process_webapp_data(message: Message):
             f"📝 Цвет текста: `{text}`\n"
             f"⚡️ Акцент: `{accent}`\n"
             f"🖼 Собственные обои: `{has_wp}`\n\n"
-            f"Нажмите на кнопку ниже, чтобы применить настройки конфигурации интерфейса:"
+            f"Вы можете установить её себе или нажать кнопку «Поделиться», чтобы отправить её в любой чат через инлайн-режим!"
         )
         await message.answer(success_text, reply_markup=kb, parse_mode="Markdown")
     except Exception as e:
         logging.error(f"Ошибка WebApp данных: {e}")
+
+@dp.inline_query()
+async def inline_query_handler(inline_query: InlineQuery):
+    user_id = inline_query.from_user.id
+    results = []
+    
+    if user_id in USER_THEMES:
+        theme = USER_THEMES[user_id]
+        msg_text = (
+            f"🎨 **Кастомная Telegram тема от пользователя!**\n\n"
+            f"📱 Платформа: `{theme['device']}`\n"
+            f"🎨 Фон чата: `{theme['bg']}`\n"
+            f"📝 Текст: `{theme['text']}`\n"
+            f"⚡️ Акцент: `{theme['accent']}`\n"
+            f"🖼 Наличие обоев: `{theme['has_wp']}`"
+        )
+        kb = InlineKeyboardMarkup(inline_keyboard=[[InlineKeyboardButton(text="Установить тему 📥", url=theme['url'])]])
+        results.append(
+            InlineQueryResultArticle(
+                id="user_theme",
+                title="Поделиться созданной темой",
+                description=f"Платформа: {theme['device']} | Фон: {theme['bg']}",
+                input_message_content=InputTextMessageContent(message_text=msg_text, parse_mode="Markdown"),
+                reply_markup=kb
+            )
+        )
+    else:
+        results.append(
+            InlineQueryResultArticle(
+                id="no_theme",
+                title="У вас пока нет созданных тем",
+                description="Сначала зайдите в бота и создайте тему в конструкторе!",
+                input_message_content=InputTextMessageContent(
+                    message_text="Привет! Чтобы создавать и делиться крутыми кастомными темами, зайди в нашего бота: @damonvane_theme_bot"
+                )
+            )
+        )
+    await inline_query.answer(results, cache_time=1, is_personal=True)
 
 async def handle(request):
     return web.Response(text="Bot is running!")
